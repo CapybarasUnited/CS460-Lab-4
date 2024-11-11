@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Patterns;
 import android.view.View;
@@ -49,6 +50,12 @@ public class SignUpActivity extends AppCompatActivity {
             if(isValidSignUpDetails()) {
                 signUp();
             }
+        });
+
+        binding.layoutImage.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            pickImage.launch(intent);
         });
     }
 
@@ -94,7 +101,7 @@ public class SignUpActivity extends AppCompatActivity {
                     }
                 }
             }
-    )
+    );
 
     private Boolean isValidSignUpDetails() {
         if(binding.inputName.getText().toString().trim().isEmpty()) {
@@ -127,5 +134,13 @@ public class SignUpActivity extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    private void loading (Boolean isLoading) {
+        if(isLoading) {
+            binding.buttonSignUp.setVisibility(View.INVISIBLE);
+            binding.progressBar.setVisibility(View.INVISIBLE);
+            //25:51
+        }
     }
 }
