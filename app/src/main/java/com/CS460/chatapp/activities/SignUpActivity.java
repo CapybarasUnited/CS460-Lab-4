@@ -32,12 +32,39 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 
+/**
+ * Controller class for the sign up activity
+ */
 public class SignUpActivity extends AppCompatActivity {
 
     private ActivitySignUpBinding binding;
     private String encodeImage;
     private PreferenceManager preferenceManager;
 
+    private final ActivityResultLauncher<Intent> pickImage = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if(result.getResultCode() == RESULT_OK) {
+                    Uri imageUri = result.getData().getData();
+                    try {
+                        InputStream inputStream = getContentResolver().openInputStream(imageUri);
+                        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+
+                        binding.imageProfile.setImageBitmap(bitmap);
+                        binding.textAddImage.setVisibility(View.GONE);
+                        encodeImage = encodeImage(bitmap);
+                    }
+                    catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+    );
+
+    /**
+     * Initialization method
+     * @param savedInstanceState Bundle
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +75,9 @@ public class SignUpActivity extends AppCompatActivity {
         preferenceManager = new PreferenceManager(getApplicationContext());
     }
 
+    /**
+     * Set listeners for the buttons in this activity
+     */
     private void setListeners() {
         binding.textCreateNewAccount.setOnClickListener(v ->
                 onBackPressed());
@@ -65,10 +95,17 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Show a toast message
+     * @param message String message to show
+     */
     private void showToast(String message) {
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Create a new account given the data stored in the EditTexts and ImageView
+     */
     private void signUp() {
         //check loading
         loading(true);
@@ -99,6 +136,11 @@ public class SignUpActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Encode an image into a string to make storing in a text only database easy
+     * @param bitmap Bitmap image to be encoded
+     * @return String encoded image
+     */
     private String encodeImage(Bitmap bitmap) {
         int previewWidth = 150;
         int previewHeight = bitmap.getHeight() * previewWidth / bitmap.getWidth();
@@ -113,26 +155,11 @@ public class SignUpActivity extends AppCompatActivity {
         return Base64.encodeToString(bytes, Base64.DEFAULT);
     }
 
-    private final ActivityResultLauncher<Intent> pickImage = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if(result.getResultCode() == RESULT_OK) {
-                    Uri imageUri = result.getData().getData();
-                    try {
-                        InputStream inputStream = getContentResolver().openInputStream(imageUri);
-                        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-
-                        binding.imageProfile.setImageBitmap(bitmap);
-                        binding.textAddImage.setVisibility(View.GONE);
-                        encodeImage = encodeImage(bitmap);
-                    }
-                    catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-    );
-
+    /**
+     * Make sure the user has entered everything necessary to create a new account,
+     * and send a toast message if there is something missing
+     * @return boolean true/false depending on the state of the elements
+     */
     private boolean isValidSignUpDetails() {
         if(encodeImage == null) {
             showToast("Please add a profile image");
@@ -170,6 +197,10 @@ public class SignUpActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Hide/show the sign up button and progress bar depending on what the app is doing
+     * @param isLoading boolean true/false depending on if the app is loading or not
+     */
     private void loading (Boolean isLoading) {
         if(isLoading) {
             binding.buttonSignUp.setVisibility(View.INVISIBLE);

@@ -1,5 +1,8 @@
 package com.CS460.chatapp.utilities;
 
+/**
+ * Utility class to store key name constant strings
+ */
 public class Constants {
     public static final String
         KEY_NAME = "name",

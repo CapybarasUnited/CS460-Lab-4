@@ -22,11 +22,18 @@ import com.google.firebase.ktx.Firebase;
 
 import java.util.HashMap;
 
+/**
+ * Controller class for the sign in activity
+ */
 public class SignInActivity extends AppCompatActivity {
 
     private ActivitySignInBinding binding;
     private PreferenceManager preferenceManager;
 
+    /**
+     * Initialization method
+     * @param savedInstanceState Bundle
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +44,9 @@ public class SignInActivity extends AppCompatActivity {
         setListeners();
     }
 
+    /**
+     * Set listeners for the buttons in this activity
+     */
     private void setListeners() {
         binding.textCreateNewAccount.setOnClickListener(v ->
                 startActivity(new Intent(getApplicationContext(), SignUpActivity.class)));
@@ -48,10 +58,19 @@ public class SignInActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Show a toast message
+     * @param message String message to show
+     */
     private void showToast(String message) {
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Sign in the user given the text the user has entered, checks to make sure the user provided
+     * credentials are present in the database. As per the requirements this method will show a toast
+     * for both successful and failed attempts
+     */
     private void signIn() {
         loading(true);
         FirebaseFirestore database = FirebaseFirestore.getInstance();
@@ -70,6 +89,8 @@ public class SignInActivity extends AppCompatActivity {
                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
+
+                        showToast("Successful Sign-in!");
                     }
                     else {
                         loading(false);
@@ -78,6 +99,10 @@ public class SignInActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Make sure the user has entered the right data to allow for a login attempt
+     * @return boolean true/false depending on if the user can try logging in
+     */
     private boolean isValidSignInDetails() {
         if(binding.inputEmail.getText().toString().trim().isEmpty()) {
             showToast("Please enter your email address");
@@ -97,6 +122,10 @@ public class SignInActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Hide/show the sign up button and progress bar depending on what the app is doing
+     * @param isLoading boolean true/false depending on if the app is loading or not
+     */
     private void loading (Boolean isLoading) {
         if(isLoading) {
             binding.buttonSignIn.setVisibility(View.INVISIBLE);

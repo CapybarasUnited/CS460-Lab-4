@@ -12,6 +12,10 @@ import com.CS460.chatapp.R;
 
 public class MainActivity extends AppCompatActivity {
 
+    /**
+     * Initialization method
+     * @param savedInstanceState Bundle
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
