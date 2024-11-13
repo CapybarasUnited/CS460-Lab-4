@@ -22,16 +22,21 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.CS460.chatapp.R;
 import com.CS460.chatapp.databinding.ActivitySignUpBinding;
+import com.CS460.chatapp.utilities.Constants;
+import com.CS460.chatapp.utilities.PreferenceManager;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.HashMap;
 
 public class SignUpActivity extends AppCompatActivity {
 
     private ActivitySignUpBinding binding;
     private String encodeImage;
+    private PreferenceManager preferenceManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +45,7 @@ public class SignUpActivity extends AppCompatActivity {
         binding = ActivitySignUpBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setListeners();
+        preferenceManager = new PreferenceManager(getApplicationContext());
     }
 
     private void setListeners() {
@@ -65,8 +71,32 @@ public class SignUpActivity extends AppCompatActivity {
 
     private void signUp() {
         //check loading
+        loading(true);
 
         //post to firestore
+        FirebaseFirestore database = FirebaseFirestore.getInstance();
+        HashMap<String, String> user = new HashMap<>();
+        user.put(Constants.KEY_NAME, binding.inputName.getText().toString());
+        user.put(Constants.KEY_EMAIL, binding.inputEmail.getText().toString());
+        user.put(Constants.KEY_PASSWORD, binding.inputPassword.getText().toString());
+
+        user.put(Constants.KEY_IMAGE, encodeImage);
+
+        database.collection(Constants.KEY_COLLECTION_USERS)
+                .add(user)
+                .addOnSuccessListener(documentReference -> {
+                    loading(false);
+                    preferenceManager.putBoolean(Constants.KEY_IS_SIGNED_IN, true);
+                    preferenceManager.putString(Constants.KEY_NAME, binding.inputName.getText().toString());
+                    preferenceManager.putString(Constants.KEY_IMAGE, encodeImage);
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+
+                }).addOnFailureListener(exception -> {
+                    loading(false);
+                    Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     private String encodeImage(Bitmap bitmap) {
@@ -103,8 +133,12 @@ public class SignUpActivity extends AppCompatActivity {
             }
     );
 
-    private Boolean isValidSignUpDetails() {
-        if(binding.inputName.getText().toString().trim().isEmpty()) {
+    private boolean isValidSignUpDetails() {
+        if(encodeImage == null) {
+            showToast("Please add a profile image");
+            return false;
+        }
+        else if(binding.inputName.getText().toString().trim().isEmpty()) {
             showToast("Please enter your name");
             return false;
         }
@@ -139,8 +173,11 @@ public class SignUpActivity extends AppCompatActivity {
     private void loading (Boolean isLoading) {
         if(isLoading) {
             binding.buttonSignUp.setVisibility(View.INVISIBLE);
+            binding.progressBar.setVisibility(View.VISIBLE);
+        }
+        else {
+            binding.buttonSignUp.setVisibility(View.VISIBLE);
             binding.progressBar.setVisibility(View.INVISIBLE);
-            //25:51
         }
     }
 }
