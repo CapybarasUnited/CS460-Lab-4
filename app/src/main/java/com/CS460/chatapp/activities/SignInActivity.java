@@ -3,7 +3,9 @@ package com.CS460.chatapp.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -55,6 +57,16 @@ public class SignInActivity extends AppCompatActivity {
             if(isValidSignInDetails()) {
                 signIn();
             }
+        });
+
+        //press enter while in password field to login
+        binding.inputPassword.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE || (event != null &&
+                    event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN)) {
+                binding.buttonSignIn.performClick();  // Simulate button click
+                return true;
+            }
+            return false;
         });
     }
 

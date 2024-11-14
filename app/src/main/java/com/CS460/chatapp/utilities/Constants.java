@@ -12,5 +12,6 @@ public class Constants {
         KEY_USER_ID = "userid",
         KEY_IS_SIGNED_IN = "isSignedIn",
         KEY_IMAGE = "image",
-        KEY_PREFERENCE_NAME = "ChatAppPreference";
+        KEY_PREFERENCE_NAME = "ChatAppPreference",
+        KEY_FCM_TOKEN = "fcmToken";
 }
