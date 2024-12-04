@@ -7,13 +7,8 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
-import com.CS460.chatapp.R;
 import com.CS460.chatapp.databinding.ActivityMainBinding;
 import com.CS460.chatapp.utilities.Constants;
 import com.CS460.chatapp.utilities.PreferenceManager;
@@ -23,7 +18,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.HashMap;
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -48,12 +42,12 @@ public class MainActivity extends AppCompatActivity {
     private void setListeners() {
         binding.imagesSignOut.setOnClickListener(view -> signOut());
         binding.fabNewChat.setOnClickListener(view -> {
-            startActivity(new Intent(getApplicationContext(), userActivity.class));
+            startActivity(new Intent(getApplicationContext(), UserActivity.class));
         });
     }
 
     private void loadUserDetails() {
-        binding.textName.setText(preferenceManager.getString(Constants.KEY_NAME));
+        binding.textName.setText(preferenceManager.getString(Constants.KEY_FIRST_NAME + preferenceManager.getString(Constants.KEY_LAST_NAME)));
         byte[] bytes = Base64.decode(preferenceManager.getString(Constants.KEY_IMAGE), Base64.DEFAULT);
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         binding.imageProfile.setImageBitmap(bitmap);

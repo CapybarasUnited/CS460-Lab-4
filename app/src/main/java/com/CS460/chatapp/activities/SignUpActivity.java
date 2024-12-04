@@ -113,10 +113,10 @@ public class SignUpActivity extends AppCompatActivity {
         //post to firestore
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         HashMap<String, String> user = new HashMap<>();
-        user.put(Constants.KEY_NAME, binding.inputName.getText().toString());
+        user.put(Constants.KEY_FIRST_NAME, binding.inputFirstName.getText().toString());
+        user.put(Constants.KEY_LAST_NAME, binding.inputLastName.getText().toString());
         user.put(Constants.KEY_EMAIL, binding.inputEmail.getText().toString());
         user.put(Constants.KEY_PASSWORD, binding.inputPassword.getText().toString());
-
         user.put(Constants.KEY_IMAGE, encodeImage);
 
         database.collection(Constants.KEY_COLLECTION_USERS)
@@ -124,7 +124,8 @@ public class SignUpActivity extends AppCompatActivity {
                 .addOnSuccessListener(documentReference -> {
                     loading(false);
                     preferenceManager.putBoolean(Constants.KEY_IS_SIGNED_IN, true);
-                    preferenceManager.putString(Constants.KEY_NAME, binding.inputName.getText().toString());
+                    preferenceManager.putString(Constants.KEY_FIRST_NAME, binding.inputFirstName.getText().toString());
+                    preferenceManager.putString(Constants.KEY_LAST_NAME, binding.inputLastName.getText().toString());
                     preferenceManager.putString(Constants.KEY_IMAGE, encodeImage);
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -165,8 +166,12 @@ public class SignUpActivity extends AppCompatActivity {
             showToast("Please add a profile image");
             return false;
         }
-        else if(binding.inputName.getText().toString().trim().isEmpty()) {
-            showToast("Please enter your name");
+        else if(binding.inputFirstName.getText().toString().trim().isEmpty()) {
+            showToast("Please enter your first name");
+            return false;
+        }
+        else if(binding.inputLastName.getText().toString().trim().isEmpty()) {
+            showToast("Please enter your last name");
             return false;
         }
         else if(binding.inputEmail.getText().toString().trim().isEmpty()) {

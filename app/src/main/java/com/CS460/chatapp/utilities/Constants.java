@@ -5,7 +5,8 @@ package com.CS460.chatapp.utilities;
  */
 public class Constants {
     public static final String
-        KEY_NAME = "name",
+        KEY_FIRST_NAME = "firstName",
+        KEY_LAST_NAME = "lastName",
         KEY_COLLECTION_USERS = "User",
         KEY_EMAIL = "email",
         KEY_PASSWORD = "password",
